@@ -18,7 +18,7 @@ sector=BPix_BmI_SEC1_LYR1
 period_type=per_phase  # per_year or per_phase
 period=phase1
 
-profile_input_path=${pixel_monitoring_path}/data/radiation_simulation/profiles/${period_type}/${sector}/profile_${sector}_${period}.txt
+profile_input_path=${pixel_monitoring_path}/data/radiation_simulation/profiles/${period_type}/${sector}/profile_${sector}_${period}_newL1.txt
 output_simulation_directory=data/simulation
 output_simulation_file_name=${output_simulation_directory}/simulation_${sector}_${period}.root
 

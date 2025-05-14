@@ -11,6 +11,12 @@ parser.add_argument("-p", "--input_file_path", help="Input the path to the root 
 parser.add_argument("-g", "--graph_name", help="Input the graph title as seen in the root file", required=True)
 parser.add_argument("-c", "--chisquare", default=0.5, type=float, help="Input the chi square threshold to test against", required=False)
 
+args = parser.parse_args()
+file = ROOT.TFile(args.input_file_path)
+graph = file.Get(args.graph_name)
+
+best_voltage = 0
+threshold = args.chisquare #chi squared threshold to check against
 
 #defining chi square calculation
 def compute_chisquare(x_vals, y_vals):
@@ -27,13 +33,6 @@ def compute_chisquare(x_vals, y_vals):
 
     return chi2
 
-if __name__ == "__main__":
-    args = parser.parse_args()
-    file = ROOT.TFile(args.input_file_path)
-    graph = file.Get(args.graph_name)
-
-    best_voltage = 0
-    threshold = args.chisquare #chi squared threshold to check against
 
 x_values = []
 y_values = []

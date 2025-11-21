@@ -40,28 +40,30 @@ for f in files:
     dfs.append(df)
 
 combined_df = pd.concat(dfs, ignore_index=True)
+combined_df = combined_df[combined_df["depletion_voltage"] > 0]
 
 #filter by section
 if args.section:
-    df = df[df["histogram"].str.contains(args.section, case=False, na=False)]
-    if df.empty:
+    combined_df = combined_df[combined_df["histogram"].str.strip() == args.section.strip()]
+    if combined_df.empty:
         raise ValueError(f"No entries found matching '{args.section}' in histogram column")
+
+combined_df["layer"] = combined_df["histogram"].str.extract(r"(Lay\d)")
+combined_df["measurement"] = combined_df["section"].apply(
+    lambda x: "Charge" if "Charge" in x else ("Size" if "Size" in x else "Unknown")
+)
 
 #plotting info
 plt.figure(figsize=(10, 6))
 
-if args.section:
-    section_df = df.sort_values("run_number")
-    x = np.asarray(section_df["run_number"].values, dtype=float)
-    y = np.asarray(section_df["depletion_voltage"].values, dtype=float)
-    plt.plot(x, y, marker="o", label=args.section)
-else:
-    for section, section_df in df.groupby("section"):
-        section_df = section_df.sort_values("run_number")
-        x = np.asarray(section_df["run_number"].values, dtype=float)
-        y = np.asarray(section_df["depletion_voltage"].values, dtype=float)
-        plt.plot(x, y, marker="o", label=section)
-
+for (layer, measurement), group_df in combined_df.groupby(["layer", "measurement"]):
+    group_df = group_df.sort_values("run_number")
+    plt.plot(
+        group_df["run_number"],
+        group_df["depletion_voltage"],
+        marker="o",
+        label=f"{layer} ({measurement})"
+    )
 
 plt.xlabel("Run Number")
 plt.ylabel("Depletion Voltage (V)")
